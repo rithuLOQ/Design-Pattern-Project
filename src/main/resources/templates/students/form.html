@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-css}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div th:replace="~{fragments/sidebar :: sidebar(activePage='students')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: top-navbar(pageHeader=${isEdit ? 'Edit Student Profile' : 'Register New Student (StudentBuilder)'})}"></div>
+
+        <div class="page-body">
+            <div class="pattern-badge-banner">
+                <div class="pattern-badge-title mb-1">
+                    <i class="bi bi-tools"></i> GoF Builder Pattern Active: StudentBuilder Construction
+                </div>
+                <div class="small opacity-90">
+                    Constructs complex Student instances fluidly step-by-step with 14+ fields without constructor parameter mismatch.
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <form th:action="@{/students/save}" th:object="${studentDto}" method="post">
+                        <input type="hidden" th:field="*{id}"/>
+
+                        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-person-lines-fill me-2"></i> Account & Academic Info</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="username" class="form-label font-semibold">Username *</label>
+                                <input type="text" th:field="*{username}" class="form-control" th:errorclass="is-invalid" required th:readonly="${isEdit}">
+                                <div class="invalid-feedback" th:errors="*{username}">Username error</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="password" class="form-label font-semibold">Password <span th:if="${isEdit}" class="text-muted small">(Leave blank to keep unchanged)</span> *</label>
+                                <input type="password" th:field="*{password}" class="form-control" placeholder="Default: student123" th:required="${!isEdit}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="registrationNumber" class="form-label font-semibold">Registration Number *</label>
+                                <input type="text" th:field="*{registrationNumber}" class="form-control" th:errorclass="is-invalid" required th:readonly="${isEdit}">
+                                <div class="invalid-feedback" th:errors="*{registrationNumber}">Reg No error</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="name" class="form-label font-semibold">Full Name *</label>
+                                <input type="text" th:field="*{name}" class="form-control" th:errorclass="is-invalid" required>
+                                <div class="invalid-feedback" th:errors="*{name}">Name error</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="email" class="form-label font-semibold">Email Address *</label>
+                                <input type="email" th:field="*{email}" class="form-control" th:errorclass="is-invalid" required>
+                                <div class="invalid-feedback" th:errors="*{email}">Email error</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="phone" class="form-label font-semibold">Student Phone *</label>
+                                <input type="text" th:field="*{phone}" class="form-control" th:errorclass="is-invalid" required placeholder="10 digits">
+                                <div class="invalid-feedback" th:errors="*{phone}">Phone error</div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="department" class="form-label font-semibold">Department *</label>
+                                <input type="text" th:field="*{department}" class="form-control" th:errorclass="is-invalid" required placeholder="e.g. Computer Science">
+                                <div class="invalid-feedback" th:errors="*{department}">Department error</div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="year" class="form-label font-semibold">Academic Year *</label>
+                                <select th:field="*{year}" class="form-select" required>
+                                    <option value="1">1st Year</option>
+                                    <option value="2">2nd Year</option>
+                                    <option value="3">3rd Year</option>
+                                    <option value="4">4th Year</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="gender" class="form-label font-semibold">Gender *</label>
+                                <select th:field="*{gender}" class="form-select" required>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-house-heart me-2"></i> Personal & Guardian Info</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="parentName" class="form-label font-semibold">Parent / Guardian Name *</label>
+                                <input type="text" th:field="*{parentName}" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="parentPhone" class="form-label font-semibold">Parent Phone *</label>
+                                <input type="text" th:field="*{parentPhone}" class="form-control" required placeholder="10 digits">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="bloodGroup" class="form-label font-semibold">Blood Group</label>
+                                <input type="text" th:field="*{bloodGroup}" class="form-control" placeholder="e.g. O+, A+, B-">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="address" class="form-label font-semibold">Permanent Address</label>
+                                <textarea th:field="*{address}" class="form-control" rows="2" placeholder="Full postal address"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="medicalCondition" class="form-label font-semibold">Medical Condition / Allergies</label>
+                                <textarea th:field="*{medicalCondition}" class="form-control" rows="2" placeholder="Any medical conditions or allergies (Optional)"></textarea>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-primary mb-3"><i class="bi bi-door-open me-2"></i> Initial Room Assignment (Optional)</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="roomId" class="form-label font-semibold">Assign Hostel Room</label>
+                                <select th:field="*{roomId}" class="form-select">
+                                    <option value="">-- Unallocated / Select Later --</option>
+                                    <option th:each="rm : ${availableRooms}" th:value="${rm.id}" th:text="${rm.roomNumber + ' (Floor ' + rm.floor + ' - ' + rm.roomType + ')'}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a th:href="@{/students}" class="btn btn-light border px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary-custom px-4">
+                                <i class="bi bi-check-lg me-1"></i> Save Student Record
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer-scripts}"></div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-css}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div th:replace="~{fragments/sidebar :: sidebar(activePage='students')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: top-navbar(pageHeader='Student Management')}"></div>
+
+        <div class="page-body">
+            <!-- Alert Messages -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}">Success</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}">Error</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Table Header Card with Search & Add Button -->
+            <div class="content-card">
+                <div class="content-card-header flex-wrap gap-3">
+                    <form th:action="@{/students}" method="get" class="d-flex gap-2 flex-grow-1" style="max-width: 450px;">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
+                            <input type="text" name="keyword" th:value="${keyword}" class="form-control bg-light border-start-0" placeholder="Search by name, reg no, dept...">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </form>
+                    <a th:href="@{/students/new}" class="btn btn-primary-custom">
+                        <i class="bi bi-person-plus-fill me-1"></i> Register Student (Builder Pattern)
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Reg No</th>
+                                <th>Student Name</th>
+                                <th>Department</th>
+                                <th>Year</th>
+                                <th>Gender</th>
+                                <th>Room Number</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="st : ${studentPage.content}">
+                                <td class="fw-bold text-primary" th:text="${st.registrationNumber}">2026-CSE-001</td>
+                                <td th:text="${st.name}">Alice Smith</td>
+                                <td th:text="${st.department}">Computer Science</td>
+                                <td th:text="${st.year}">3</td>
+                                <td th:text="${st.gender}">Female</td>
+                                <td>
+                                    <span th:if="${st.room != null}" class="badge bg-success" th:text="${st.room.roomNumber}">A-101</span>
+                                    <span th:if="${st.room == null}" class="badge bg-secondary">Unallocated</span>
+                                </td>
+                                <td th:text="${st.phone}">9876543212</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a th:href="@{/students/view/{id}(id=${st.id})}" class="btn btn-light border" title="View Profile"><i class="bi bi-eye"></i></a>
+                                        <a th:href="@{/students/edit/{id}(id=${st.id})}" class="btn btn-light border" title="Edit Student"><i class="bi bi-pencil"></i></a>
+                                        <!-- Allocate / Vacate Room Modal Trigger -->
+                                        <button type="button" class="btn btn-light border text-primary" data-bs-toggle="modal" th:data-bs-target="'#roomModal-' + ${st.id}" title="Room Allocation">
+                                            <i class="bi bi-door-open"></i>
+                                        </button>
+                                        <a href="javascript:void(0);" th:onclick="'confirmDelete(\'/students/delete/' + ${st.id} + '\', \'' + ${st.name} + '\')'" class="btn btn-light border text-danger" title="Delete Student">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+
+                                    <!-- Room Allocation Modal -->
+                                    <div class="modal fade" th:id="'roomModal-' + ${st.id}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Manage Room - <span th:text="${st.name}">Student</span></h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body text-start">
+                                                    <p>Current Room: 
+                                                        <strong th:text="${st.room != null ? st.room.roomNumber : 'None'}">None</strong>
+                                                    </p>
+                                                    
+                                                    <!-- Allocate Form -->
+                                                    <form th:action="@{/students/allocate}" method="post" class="mb-3">
+                                                        <input type="hidden" name="studentId" th:value="${st.id}">
+                                                        <div class="mb-3">
+                                                            <label class="form-label font-semibold">Select Available Room</label>
+                                                            <select name="roomId" class="form-select" required>
+                                                                <option value="">-- Choose Room --</option>
+                                                                <option th:each="rm : ${availableRooms}" th:value="${rm.id}" th:text="${rm.roomNumber + ' (Floor ' + rm.floor + ' - ' + rm.roomType + ' - Capacity: ' + rm.occupiedCount + '/' + rm.capacity + ')'}"></option>
+                                                            </select>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary btn-sm w-100">Allocate Selected Room</button>
+                                                    </form>
+
+                                                    <!-- Vacate Form -->
+                                                    <form th:if="${st.room != null}" th:action="@{/students/vacate}" method="post">
+                                                        <input type="hidden" name="studentId" th:value="${st.id}">
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">Vacate Current Room</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(studentPage.content)}">
+                                <td colspan="8" class="text-center py-4 text-muted">No student records found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div th:if="${totalPages > 1}" class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
+                    <div class="small text-muted">Showing Page <span th:text="${currentPage + 1}">1</span> of <span th:text="${totalPages}">1</span></div>
+                    <ul class="pagination pagination-sm m-0">
+                        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/students(page=${currentPage - 1}, keyword=${keyword})}">Previous</a>
+                        </li>
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="page-item" th:classappend="${i == currentPage ? 'active' : ''}">
+                            <a class="page-link" th:href="@{/students(page=${i}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${currentPage + 1 == totalPages ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/students(page=${currentPage + 1}, keyword=${keyword})}">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer-scripts}"></div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-css}"></head>
+<body>
+
+<div class="app-wrapper">
+    <div th:replace="~{fragments/sidebar :: sidebar(activePage='students')}"></div>
+
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: top-navbar(pageHeader='Student Details Profile')}"></div>
+
+        <div class="page-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <a th:href="@{/students}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i> Back to Student List</a>
+                <a th:href="@{/students/edit/{id}(id=${student.id})}" class="btn btn-primary-custom btn-sm"><i class="bi bi-pencil me-1"></i> Edit Student</a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Main Info Card -->
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm text-center p-4 rounded-4">
+                        <div class="avatar-circle mx-auto mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                            <span th:text="${#strings.substring(student.name, 0, 1)}">A</span>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-1" th:text="${student.name}">Alice Smith</h4>
+                        <div class="text-primary fw-semibold mb-3" th:text="${student.registrationNumber}">2026-CSE-001</div>
+                        <span class="badge bg-success px-3 py-2 fs-6 mb-3" th:if="${student.room != null}" th:text="'Room ' + ${student.room.roomNumber}">Room A-101</span>
+                        <span class="badge bg-secondary px-3 py-2 fs-6 mb-3" th:if="${student.room == null}">No Room Assigned</span>
+
+                        <ul class="list-group list-group-flush text-start small border-top">
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Username:</span>
+                                <strong th:text="${student.username}">student1</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Department:</span>
+                                <strong th:text="${student.department}">CSE</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between px-0">
+                                <span class="text-muted">Academic Year:</span>
+                                <strong th:text="${student.year + ' Year'}">3 Year</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Detailed Attributes Table -->
+                <div class="col-md-8">
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold text-primary mb-3 border-bottom pb-2"><i class="bi bi-info-circle me-2"></i> Comprehensive Student Details</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="small text-muted">Email Address</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.email}">email@student.com</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-muted">Phone Number</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.phone}">9876543212</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-muted">Gender</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.gender}">Female</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-muted">Blood Group</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.bloodGroup != null ? student.bloodGroup : 'Not Specified'}">O+</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="small text-muted">Parent / Guardian Name</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.parentName}">John Smith</div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small text-muted">Parent Phone</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.parentPhone}">9123456789</div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="small text-muted">Permanent Address</div>
+                                <div class="fw-semibold text-dark mb-3" th:text="${student.address != null ? student.address : 'N/A'}">Address</div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="small text-muted">Medical Conditions / Allergies</div>
+                                <div class="fw-semibold text-dark" th:text="${student.medicalCondition != null ? student.medicalCondition : 'None'}">None</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer-scripts}"></div>
+    </div>
+</div>
+
+</body>
+</html>

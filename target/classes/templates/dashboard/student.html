@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-css}"></head>
+<body>
+
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar(activePage='dashboard')}"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: top-navbar(pageHeader='Student Dashboard')}"></div>
+
+        <div class="page-body">
+            <!-- Student Personal Profile Overview -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 overflow-hidden">
+                <div class="card-body p-4 bg-white">
+                    <div class="d-flex align-items-center gap-4 flex-wrap">
+                        <div class="avatar-circle" style="width: 70px; height: 70px; font-size: 2rem;">
+                            <span th:text="${student != null ? #strings.substring(student.name, 0, 1) : 'S'}">S</span>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1" th:text="${student != null ? student.name : 'Student Name'}">Alice Smith</h4>
+                            <div class="text-muted small">
+                                <span class="me-3"><i class="bi bi-card-heading text-primary me-1"></i> Reg: <strong th:text="${student != null ? student.registrationNumber : 'N/A'}">2026-CSE-001</strong></span>
+                                <span class="me-3"><i class="bi bi-book text-success me-1"></i> Dept: <strong th:text="${student != null ? student.department : 'N/A'}">CSE</strong></span>
+                                <span><i class="bi bi-door-open text-warning me-1"></i> Room: 
+                                    <strong th:if="${student != null and student.room != null}" th:text="${student.room.roomNumber}">A-101</strong>
+                                    <span th:if="${student == null or student.room == null}" class="badge bg-secondary">Unallocated</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold m-0"><i class="bi bi-exclamation-triangle text-danger me-2"></i> Your Complaints</h5>
+                            <a th:href="@{/complaints/new}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> Raise Complaint</a>
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div th:each="c : ${studentComplaints}" class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-semibold" th:text="${c.title}">Title</div>
+                                    <div class="text-muted" th:text="${c.description}">Description</div>
+                                </div>
+                                <span class="badge" th:classappend="${c.status.name() == 'RESOLVED' ? 'bg-success' : 'bg-warning text-dark'}" th:text="${c.status}">PENDING</span>
+                            </div>
+                            <div th:if="${#lists.isEmpty(studentComplaints)}" class="text-muted py-2 text-center">No complaints filed yet.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm p-3 h-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold m-0"><i class="bi bi-receipt-cutoff text-success me-2"></i> Your Fee Dues</h5>
+                            <a th:href="@{/fees}" class="btn btn-sm btn-outline-success">Fee Details</a>
+                        </div>
+                        <div class="list-group list-group-flush small">
+                            <div th:each="f : ${studentFees}" class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-bold text-dark">Amount: ₹<span th:text="${f.amount}">25000</span></div>
+                                    <div class="text-muted">Due Date: <span th:text="${f.dueDate}">2026-08-31</span></div>
+                                </div>
+                                <span class="badge" th:classappend="${f.status.name() == 'PAID' ? 'bg-success' : 'bg-danger'}" th:text="${f.status}">UNPAID</span>
+                            </div>
+                            <div th:if="${#lists.isEmpty(studentFees)}" class="text-muted py-2 text-center">No fee dues found.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer-scripts}"></div>
+    </div>
+</div>
+
+</body>
+</html>

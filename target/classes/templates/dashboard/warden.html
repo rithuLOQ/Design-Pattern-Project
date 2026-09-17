@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-css}"></head>
+<body>
+
+<div class="app-wrapper">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar(activePage='dashboard')}"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div th:replace="~{fragments/header :: top-navbar(pageHeader='Warden Dashboard')}"></div>
+
+        <div class="page-body">
+            <div class="pattern-badge-banner">
+                <div class="pattern-badge-title mb-1">
+                    <i class="bi bi-shield-lock"></i> GoF Factory Method Pattern Active: Warden User Session
+                </div>
+                <div class="small opacity-90" th:text="${singletonDbInfo}">DB Status</div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-icon bg-blue-light"><i class="bi bi-people"></i></div>
+                        <div class="metric-value" th:text="${totalStudents}">0</div>
+                        <div class="metric-label">Total Registered Students</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-icon bg-green-light"><i class="bi bi-door-open"></i></div>
+                        <div class="metric-value" th:text="${availableRooms}">0</div>
+                        <div class="metric-label">Available Hostel Rooms</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="metric-card">
+                        <div class="metric-icon bg-yellow-light"><i class="bi bi-exclamation-octagon"></i></div>
+                        <div class="metric-value" th:text="${pendingComplaints}">0</div>
+                        <div class="metric-label">Pending Maintenance Complaints</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Pending Complaints Table -->
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h5 class="content-card-title"><i class="bi bi-wrench-adjustable me-2 text-warning"></i> Pending Maintenance Requests</h5>
+                    <a th:href="@{/complaints}" class="btn btn-sm btn-outline-primary fw-semibold">View All Complaints</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-custom align-middle">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="comp : ${recentComplaints}">
+                                <td th:text="${comp.student.name}">Student Name</td>
+                                <td class="fw-bold" th:text="${comp.title}">Complaint Title</td>
+                                <td th:text="${#strings.abbreviate(comp.description, 60)}">Details...</td>
+                                <td><span class="badge bg-warning text-dark" th:text="${comp.status}">PENDING</span></td>
+                                <td>
+                                    <a th:href="@{/complaints}" class="btn btn-sm btn-success"><i class="bi bi-check-circle"></i> Resolve</a>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(recentComplaints)}">
+                                <td colspan="5" class="text-center py-3 text-muted">No pending complaints. All quiet in the hostel!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/footer :: footer-scripts}"></div>
+    </div>
+</div>
+
+</body>
+</html>
