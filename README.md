@@ -384,4 +384,5 @@ students ||--o{ fees : "Owes/Pays"
 @enduml
 ```
 #   D e s i g n - P a t t e r n - P r o j e c t  
+ #   D e s i g n - P a t t e r n - P r o j e c t  
  
