@@ -1,0 +1,68 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class SystemConfigurationManager {
+  - instance: SystemConfigurationManager
+  - SystemConfigurationManager()
+  + getInstance(): SystemConfigurationManager
+  + getDefaultFeeCurrency(): String
+}
+
+class UserFactory {
+  + createUser(username: String, password: String, role: UserRole): User
+}
+class User
+class Student
+class StudentBuilder {
+  + setUser(user: User): StudentBuilder
+  + setRegistrationNumber(value: String): StudentBuilder
+  + setName(value: String): StudentBuilder
+  + build(): Student
+}
+
+class HostelManagementFacade {
+  + registerStudent(student: Student): Student
+  + allocateRoom(studentId: Long, roomId: Long): Room
+  + vacateRoom(studentId: Long): Room
+  + generateFee(studentId: Long, amount: BigDecimal, dueDate: LocalDate): Fee
+}
+class StudentService
+class RoomService
+class ComplaintService
+class FeeService
+
+interface Command {
+  + execute(): void
+}
+class AllocateRoomCommand
+class VacateRoomCommand
+class ResolveComplaintCommand
+class GenerateFeeCommand
+class HostelCommandInvoker {
+  + submit(command: Command): void
+}
+class HostelManagementReceiver
+
+SystemConfigurationManager ..> AdminController : used by
+AdminController ..> UserFactory : creates users
+UserFactory ..> User : creates
+StudentBuilder ..> Student : builds
+AdminController ..> StudentBuilder : uses
+HostelManagementFacade o-- StudentService
+HostelManagementFacade o-- RoomService
+HostelManagementFacade o-- ComplaintService
+HostelManagementFacade o-- FeeService
+AdminController ..> HostelManagementFacade : uses
+Command <|.. AllocateRoomCommand
+Command <|.. VacateRoomCommand
+Command <|.. ResolveComplaintCommand
+Command <|.. GenerateFeeCommand
+HostelCommandInvoker o-- Command
+AllocateRoomCommand ..> HostelManagementReceiver
+VacateRoomCommand ..> HostelManagementReceiver
+ResolveComplaintCommand ..> HostelManagementReceiver
+GenerateFeeCommand ..> HostelManagementReceiver
+HostelManagementReceiver ..> RoomService
+HostelManagementReceiver ..> ComplaintService
+HostelManagementReceiver ..> FeeService
+@enduml
